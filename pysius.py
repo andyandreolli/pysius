@@ -256,11 +256,13 @@ fig, ax = plt.subplots()
 ax.plot(eta,f)
 ax.plot(eta,u)
 ax.plot(eta,xi)
+ax.plot(eta,eta*u-f)
 ax.set_xlabel('$\eta$')
 ax.set_xlim([0,10])
-ax.set_ylim([-0.1,1.3])
+ax.set_ylim([-0.1,2])
 ax.grid()
-ax.legend(['f', 'u', 'xi'])
+ax.legend(['$f$', '$u$', '$\\xi$', '$\eta u - f$'])
+
 
 # # Postprocessing
 
@@ -329,7 +331,7 @@ ax.set_ylabel('y')
 # 
 # $$ u_x = u_\infty \, f' $$
 # 
-# $$ u_y = \sqrt{\frac{\nu u_\infty}{x}} \, \left(\eta\, f' -f \right) $$
+# $$ u_y = \frac{1}{2}\sqrt{\frac{\nu u_\infty}{x}} \, \left(\eta\, f' -f \right) $$
 # 
 # _Notice that this leads to an infinite value of $u_y$ in the limit for $x \to 0$._
 
@@ -348,7 +350,7 @@ for ii in range(noy):
     for jj in range(nox):
         current_eta = get_eta(x[ii,jj], y[ii,jj])
         ux[ii,jj] = np.interp(current_eta, eta, u) * u_inf
-        uy[ii,jj] = (current_eta*np.interp(current_eta, eta, u) - np.interp(current_eta, eta, f)) * math.sqrt(nu*u_inf/x[ii,jj])
+        uy[ii,jj] = (current_eta*np.interp(current_eta, eta, u) - np.interp(current_eta, eta, f)) * math.sqrt(nu*u_inf/x[ii,jj])/2
 
 
 # In[18]:
@@ -373,7 +375,6 @@ for ii in range(noy):
     for jj in range(nox):
         current_eta = get_eta(x[ii,jj], y[ii,jj])
         ux[ii,jj] = np.interp(current_eta, eta, u) * u_inf
-        uy[ii,jj] = (current_eta*np.interp(current_eta, eta, u) - np.interp(current_eta, eta, f)) * math.sqrt(nu*u_inf/x[ii,jj])
 
 fig, ax = plt.subplots()
 ax.quiver(x,y,ux,0)
@@ -381,14 +382,19 @@ ax.set_title('x-component of velocity field')
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 
+plt.show()
+
 
 # However, the fact that the boundary layer thickness (from now on indicated with $\delta(x)$) tends to 0 for $x \to 0$ also means that $\eta$ becomes singular there, as it can be written as:
 # 
 # $$ \eta = \frac{y}{\delta(x)} $$
 # 
-# Similarly, also the vertical velocity component $u_y$ becomes singular.
+# thus $\lim_{x \to 0} \eta = \infty$. Similarly, also the vertical velocity component $u_y$ becomes singular as the term $1/\sqrt{x}$ diverges for $x \to 0$, while the term $\left(\eta\, f' -f \right)$ converges to a constant for $\eta \to \infty$:
 # 
-# Another issue with the vertical velocity component is that, for any $x$ and for $y \to \infty$, non-zero values are observed (actually, $u_y$ becomes larger and larger moving away from the wall, until an asymptotic value is found); this does not match the imposed external, irrotational flow, which is assumed to be:
+# $$ u_y = \frac{1}{2}\sqrt{\frac{\nu u_\infty}{x}} \, \left(\eta\, f' -f \right) $$
+# 
+# 
+# Another issue with the vertical velocity component is that, for any $x$ and for $y \to \infty$, non-zero values are observed due to the term $\left(\eta\, f' -f \right)$ (actually, $u_y$ becomes larger and larger moving away from the wall, until an asymptotic value is found); this does not match the imposed external, irrotational flow, which is assumed to be:
 # 
 # $$\mathbf{U}_{ext} = u_\infty\hat{\mathbf{x}} + 0\,\hat{\mathbf{y}}$$
 # 
@@ -399,6 +405,6 @@ ax.set_ylabel('y')
 
 # In[ ]:
 
-plt.show()
+
 
 
